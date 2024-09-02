@@ -10,7 +10,7 @@ function App() {
     projects: [],
   });
 
-  const handleAddProject = () =>
+  const handleAddProjectButton = () =>
     setProjectsState((prevProjectsState) => {
       return {
         ...prevProjectsState,
@@ -18,13 +18,27 @@ function App() {
       };
     });
 
+  const handleAddProject = (project) => {
+    const newProject = {
+      ...project,
+      id: Math.random(),
+    }
+    setProjectsState(prevProjectsState => {
+      return {
+        ...prevProjectsState,
+        projects: [...prevProjectsState.projects, newProject]
+      }
+    });
+  };
+  console.log(projectsState);    
+
   return (
     <main className="h-screen mt-8 flex gap-16">
-      <Sidebar onCreate={handleAddProject} />
+      <Sidebar onCreate={handleAddProjectButton} />
       {projectsState.activeScreen === "noProject" && (
-        <NoProjectSelected onCreate={handleAddProject} />
+        <NoProjectSelected onCreate={handleAddProjectButton} />
       )}
-      {projectsState.activeScreen === "addProject" && <NewProject />}
+      {projectsState.activeScreen === "addProject" && <NewProject onSave={handleAddProject} />}
     </main>
   );
 }
