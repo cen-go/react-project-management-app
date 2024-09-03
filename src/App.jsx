@@ -18,27 +18,38 @@ function App() {
       };
     });
 
+  const handleCancel = () =>
+    setProjectsState((prevProjectsState) => {
+      return {
+        ...prevProjectsState,
+        activeScreen: "noProject",
+      };
+    });
+
   const handleAddProject = (project) => {
     const newProject = {
       ...project,
       id: Math.random(),
-    }
-    setProjectsState(prevProjectsState => {
+    };
+    setProjectsState((prevProjectsState) => {
       return {
         ...prevProjectsState,
-        projects: [...prevProjectsState.projects, newProject]
-      }
+        activeScreen: "noProject",
+        projects: [...prevProjectsState.projects, newProject],
+      };
     });
   };
-  console.log(projectsState);    
+  console.log(projectsState);
 
   return (
     <main className="h-screen mt-8 flex gap-16">
-      <Sidebar onCreate={handleAddProjectButton} />
+      <Sidebar onCreate={handleAddProjectButton} projects={projectsState} />
       {projectsState.activeScreen === "noProject" && (
         <NoProjectSelected onCreate={handleAddProjectButton} />
       )}
-      {projectsState.activeScreen === "addProject" && <NewProject onSave={handleAddProject} />}
+      {projectsState.activeScreen === "addProject" && (
+        <NewProject onSave={handleAddProject} onCancel={handleCancel} />
+      )}
     </main>
   );
 }
