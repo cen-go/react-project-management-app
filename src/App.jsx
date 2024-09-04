@@ -3,6 +3,7 @@ import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import NewProject from "./components/NewProject";
 import NoProjectSelected from "./components/NoProjectSelected";
+import SelectedProject from "./components/SelectedProject";
 
 function App() {
   const [projectsState, setProjectsState] = useState({
@@ -39,16 +40,33 @@ function App() {
       };
     });
   };
-  console.log(projectsState);
+
+  const handleSelectProject = (projectId) => {
+    setProjectsState((prevProjectsState) => {
+      return {
+        ...prevProjectsState,
+        activeScreen: projectId,
+      };
+    });
+  };
 
   return (
     <main className="h-screen mt-8 flex gap-16">
-      <Sidebar onCreate={handleAddProjectButton} projects={projectsState} />
-      {projectsState.activeScreen === "noProject" && (
+      <Sidebar
+        selectedProjectId={projectsState.activeScreen}
+        onCreate={handleAddProjectButton}
+        onSelect={handleSelectProject}
+        projects={projectsState}
+      />
+      {projectsState.activeScreen === "noProject" ? (
         <NoProjectSelected onCreate={handleAddProjectButton} />
-      )}
-      {projectsState.activeScreen === "addProject" && (
+      ) : projectsState.activeScreen === "addProject" ? (
         <NewProject onSave={handleAddProject} onCancel={handleCancel} />
+      ) : (
+        <SelectedProject
+          projectId={projectsState.activeScreen}
+          projects={projectsState.projects}
+        />
       )}
     </main>
   );
