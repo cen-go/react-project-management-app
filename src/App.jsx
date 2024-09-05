@@ -7,15 +7,15 @@ import SelectedProject from "./components/SelectedProject";
 
 function App() {
   const [projectsState, setProjectsState] = useState({
-    activeScreen: "noProject",
+    selectedProjectId: undefined,
     projects: [],
   });
-
+  
   const handleAddProjectButton = () =>
     setProjectsState((prevProjectsState) => {
       return {
         ...prevProjectsState,
-        activeScreen: "addProject",
+        selectedProjectId: null,
       };
     });
 
@@ -23,7 +23,7 @@ function App() {
     setProjectsState((prevProjectsState) => {
       return {
         ...prevProjectsState,
-        activeScreen: "noProject",
+        selectedProjectId: undefined,
       };
     });
 
@@ -35,7 +35,7 @@ function App() {
     setProjectsState((prevProjectsState) => {
       return {
         ...prevProjectsState,
-        activeScreen: "noProject",
+        selectedProjectId: undefined,
         projects: [...prevProjectsState.projects, newProject],
       };
     });
@@ -45,27 +45,80 @@ function App() {
     setProjectsState((prevProjectsState) => {
       return {
         ...prevProjectsState,
-        activeScreen: projectId,
+        selectedProjectId: projectId,
+      };
+    });
+  };  
+
+  const handleDelete = () => {
+    setProjectsState((prevProjectsState) => {
+      return {
+        ...prevProjectsState,
+        selectedProjectId: undefined,
+        projects: prevProjectsState.projects.filter(
+          (project) => project.id !== prevProjectsState.projectId
+        ),
       };
     });
   };
 
+  const handleAddTask = (taskText) => {
+    const task = {
+      taskTitle: taskText,
+      id: Math.random(),
+    }
+    
+    setProjectsState((prevProjectsState) => {
+      let copiedProjects = [...prevProjectsState.projects];
+      copiedProjects[index].tasks.push(task);
+
+      return {
+        ...prevProjectsState,
+        projects: copiedProjects,
+      };
+    });
+  };
+  
+  const handleDeleteTask = (taskId) => {
+    setProjectsState((prevProjectsState) => {
+      let copiedProjects = [...prevProjectsState.projects];
+      const remainingTasks = copiedProjects[index].tasks.filter(
+        (task) => task.id !== taskId
+      );
+      copiedProjects[index].tasks = remainingTasks;
+
+      return {
+        ...prevProjectsState,
+        projects: copiedProjects,
+      };
+    });
+  };
+
+  const selectedProject = projectsState.projects.find((project) => project.id === projectsState.selectedProjectId);
+  const index = projectsState.projects.indexOf(selectedProject);
+  const tasks = selectedProject ? selectedProject.tasks : [];
+  
+
+
   return (
     <main className="h-screen mt-8 flex gap-16">
       <Sidebar
-        selectedProjectId={projectsState.activeScreen}
+        selectedProjectId={projectsState.selectedProjectId}
         onCreate={handleAddProjectButton}
         onSelect={handleSelectProject}
         projects={projectsState}
       />
-      {projectsState.activeScreen === "noProject" ? (
+      {projectsState.selectedProjectId === undefined ? (
         <NoProjectSelected onCreate={handleAddProjectButton} />
-      ) : projectsState.activeScreen === "addProject" ? (
+      ) : projectsState.selectedProjectId === null ? (
         <NewProject onSave={handleAddProject} onCancel={handleCancel} />
       ) : (
         <SelectedProject
-          projectId={projectsState.activeScreen}
-          projects={projectsState.projects}
+          onDelete={handleDelete}
+          project={selectedProject}
+          onAddTask={handleAddTask}
+          onDeleteTask={handleDeleteTask}
+          tasksList={tasks}
         />
       )}
     </main>

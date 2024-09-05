@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { useRef } from "react";
 
 import Input from "./Input";
 import Modal from "./Modal";
@@ -14,6 +14,7 @@ export default function NewProject({ onSave, onCancel }) {
       title: titleRef.current.value,
       description: descriptionRef.current.value,
       dueDate: dueDateRef.current.value,
+      tasks: [],
     };
 
     if (
